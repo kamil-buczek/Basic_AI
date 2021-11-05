@@ -9,6 +9,9 @@ from Osobnik.Osobnik import Osobnik
 
 class Plecak(Osobnik):
 
+    najlepsze_przystysowanie = 10000
+    najlepszy_obobnik = None
+
     def __init__(self, przedmioty: list, obj_plecaka: int, is_dziecko=False):
         super().__init__()
 
@@ -58,6 +61,10 @@ class Plecak(Osobnik):
 
         przystosowanie = obj_plecaka - suma_objetosci
 
+        if Plecak.najlepsze_przystysowanie > przystosowanie >= 0:
+            Plecak.najlepsze_przystysowanie = przystosowanie
+            Plecak.najlepszy_obobnik = self
+
         return przystosowanie
 
     def krzyzowanie(self, osobnik: 'Plecak') -> ('Plecak', 'Plecak'):
@@ -94,3 +101,22 @@ class Plecak(Osobnik):
         print("______________________________________\n\n")
 
         return dziecko1, dziecko2
+
+    def mutacja(self):
+
+        print("Przeprowadzam mutację osobnika")
+        liczba_genow_osobnik = len(self.osobnik)
+        #print(f"Zakres losowania liczby to 0 i {liczba_genow_osobnik}")
+        wylosowana_liczba = random.randrange(0, liczba_genow_osobnik)
+        print(f"Mutuje gen numer {wylosowana_liczba}")
+        print(f'Gen przed mutacją: {self.osobnik[wylosowana_liczba]}')
+
+        gen = self.osobnik[wylosowana_liczba][0]
+        if gen == 1:
+            gen = 0
+        elif gen == 0:
+            gen = 1
+        self.osobnik[wylosowana_liczba][0] = gen
+
+        print(f'Gen po mutacji: {self.osobnik[wylosowana_liczba]}')
+
