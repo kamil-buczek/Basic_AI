@@ -5,12 +5,15 @@ import random
 
 # Local
 from Osobnik.Osobnik import Osobnik
+from libs.logger import get_logger
+
+logger = get_logger('main')
 
 
 class Plecak(Osobnik):
 
-    najlepsze_przystysowanie = 10000
-    najlepszy_obobnik = None
+    najlepsze_przystysowanie = 10000000
+    najlepszy_osobnik = None
 
     def __init__(self, przedmioty: list, obj_plecaka: int, is_dziecko=False):
         super().__init__()
@@ -63,7 +66,7 @@ class Plecak(Osobnik):
 
         if Plecak.najlepsze_przystysowanie > przystosowanie >= 0:
             Plecak.najlepsze_przystysowanie = przystosowanie
-            Plecak.najlepszy_obobnik = self
+            Plecak.najlepszy_osobnik = self
 
         return przystosowanie
 
@@ -74,7 +77,7 @@ class Plecak(Osobnik):
 
         liczba_genow = len(rodzic1.get_osobnik())
 
-        print(f"Krzyzowanie osobnika {rodzic1.get_geny()} oraz {rodzic2.get_geny()}")
+        logger.debug(f"Krzyzowanie osobnika {rodzic1.get_geny()} oraz {rodzic2.get_geny()}")
 
         dziecko1_geny = []
         dziecko2_geny = []
@@ -93,23 +96,20 @@ class Plecak(Osobnik):
         dziecko2 = Plecak(rodzic2.get_objetosci(), rodzic2.get_objetosc_placaka(), is_dziecko=True)
         dziecko2.set_geny(dziecko2_geny)
 
-        print("______________________________________")
-        print(f"Rodzic1 geny: {rodzic1.get_geny()}")
-        print(f"Rodzic2 geny: {rodzic2.get_geny()}")
-        print(f"Dziecko1 geny: {dziecko1.get_geny()}")
-        print(f"Dziecko2 geny: {dziecko2.get_geny()}")
-        print("______________________________________\n\n")
+        logger.debug(f"Rodzic1 geny: {rodzic1.get_geny()}")
+        logger.debug(f"Rodzic2 geny: {rodzic2.get_geny()}")
+        logger.debug(f"Dziecko1 geny: {dziecko1.get_geny()}")
+        logger.debug(f"Dziecko2 geny: {dziecko2.get_geny()}\n\n")
 
         return dziecko1, dziecko2
 
     def mutacja(self):
 
-        print("Przeprowadzam mutację osobnika")
+        logger.debug("Przeprowadzam mutację osobnika")
         liczba_genow_osobnik = len(self.osobnik)
-        #print(f"Zakres losowania liczby to 0 i {liczba_genow_osobnik}")
         wylosowana_liczba = random.randrange(0, liczba_genow_osobnik)
-        print(f"Mutuje gen numer {wylosowana_liczba}")
-        print(f'Gen przed mutacją: {self.osobnik[wylosowana_liczba]}')
+        logger.debug(f"Mutuje gen numer {wylosowana_liczba}")
+        logger.debug(f'Gen przed mutacją: {self.osobnik[wylosowana_liczba]}')
 
         gen = self.osobnik[wylosowana_liczba][0]
         if gen == 1:
@@ -118,5 +118,5 @@ class Plecak(Osobnik):
             gen = 1
         self.osobnik[wylosowana_liczba][0] = gen
 
-        print(f'Gen po mutacji: {self.osobnik[wylosowana_liczba]}')
+        logger.debug(f'Gen po mutacji: {self.osobnik[wylosowana_liczba]}')
 
