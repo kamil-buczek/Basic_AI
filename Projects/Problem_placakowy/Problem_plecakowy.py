@@ -15,13 +15,15 @@ logger = get_logger('main')
 liczba_przedmiotow = 100  # liczba genow
 min_obj_przedmiotu = 10
 max_obj_przedmiotu = 99
-max_liczba_pokolen = 100
+max_liczba_pokolen = 1000
 czestotliwosc_mutacji = 1000  # jedna mutacja na 1000 genów
+
+calokowita_objetosc_plecaka = 3000  # V
 
 N = 100  # Liczba osobnikow
 
 # Warunek stopu
-max_liczba_pokolen_z_takim_samym_wynikiem = 5
+max_liczba_pokolen_z_takim_samym_wynikiem = 50
 
 
 def parse_arguments():
@@ -110,20 +112,24 @@ def selekcja(populacja: list, max_liczba_par: int) -> list:
         if przys_osobnik1 < 0:
             logger.debug(f"Przystosowanie {przys_osobnik1} nie spelnia warunku. Wygrywa osobnik2 {osobnik2.get_geny()}")
             nowa_populacja.append(osobnik2)
+            osobnik2.czy_najlepszy_osobnik()
 
         elif przys_osobnik2 < 0:
             logger.debug(f"Przystosowanie {przys_osobnik2} nie spelnia warunku. Wygrywa osobnik1 {osobnik1.get_geny()}")
             nowa_populacja.append(osobnik1)
+            osobnik1.czy_najlepszy_osobnik()
 
         elif przys_osobnik1 < przys_osobnik2:
             logger.debug(f"Wygrywa osobnik1 {osobnik1.get_geny()} z "
                   f"przystosowaniem {przys_osobnik1} i trafia on do nowego pokolenia")
             nowa_populacja.append(osobnik1)
+            osobnik1.czy_najlepszy_osobnik()
 
         elif przys_osobnik2 < przys_osobnik1:
             logger.debug(f"Wygrywa osobnik2 {osobnik2.get_geny()} z "
                   f"przystosowaniem {przys_osobnik2} i trafia on do nowego pokolenia")
             nowa_populacja.append(osobnik2)
+            osobnik2.czy_najlepszy_osobnik()
 
         else:
             logger.debug("Przystosowania obydwu osobnikow sa takie same. Decyduje los.")
@@ -131,10 +137,12 @@ def selekcja(populacja: list, max_liczba_par: int) -> list:
             if los == 1:
                 logger.debug(f"Losowanie wygrywa osobnik1 {osobnik1.get_geny()}")
                 nowa_populacja.append(osobnik1)
+                osobnik1.czy_najlepszy_osobnik()
 
             elif los == 2:
                 logger.debug(f"Losowanie wygrywa osobnik2 {osobnik2.get_geny()}")
                 nowa_populacja.append(osobnik2)
+                osobnik2.czy_najlepszy_osobnik()
 
             else:
                 logger.debug(f"Wynik losu {los} jest bledny. Zwroc wyjatek")
@@ -196,13 +204,30 @@ def sprawdzenie_wyniku(najlepsze_przystosowanie: int, najlepsze_geny: list, prze
     if len(najlepsze_geny) == len(przedmioty):
         logger.info("Sprawdzenie wyniku")
         suma = 0
+
+        end_string = '0'
+
         for _ in range(len(przedmioty)):
             if najlepsze_geny[_]:
+                logger.debug(f"Suma przed dodaniem: {suma}")
+                logger.debug(f'Dodaje przedmiot o objetosci: {przedmioty[_]}')
                 suma = suma + przedmioty[_]
+                end_string = end_string + f'+{przedmioty[_]}'
+                logger.debug(f'Suma po dodaniu: {suma}')
+
         logger.info(f"Suma przedmiotow wlozonych do pleacka to: {suma}")
         logger.info(f"Objetosc plecaka to: {objetosc_plecaka}")
         roznica = objetosc_plecaka - suma
         logger.info(f"Pozostalo miejsca w plecaku: {roznica}")
+        logger.info(f'Koncowy string dodawania to: {end_string}')
+
+        if roznica != najlepsze_przystosowanie:
+            err_mgs = f'Pozostałe miejsce w plecaku= {roznica} nie zgadza się z najlepszym przystosowaniem= {najlepsze_przystosowanie}'
+            logger.error(err_mgs)
+            raise Exception(err_mgs)
+        else:
+            logger.info("Pozostałem miejsce w plecaku zgadza się z najlepszym przystosowaniem")
+
     else:
         logger.error("Dlugosc listy z ganami i przedmiotami nie jest taka sama. Bład w algorytmie.")
         raise Exception
@@ -229,7 +254,8 @@ if __name__ == '__main__':
 
     logger.info(f"Laczna objetosc wszystkich {liczba_przedmiotow} przedmiotow to {suma_objetosci_przedmiotow}")
 
-    objetosc_plecaka = int(suma_objetosci_przedmiotow / 1.5)
+    # objetosc_plecaka = int(suma_objetosci_przedmiotow / 1.5)
+    objetosc_plecaka  = calokowita_objetosc_plecaka
 
     logger.info(f'Objetosc plecaka to: {objetosc_plecaka}')
     logger.info(f"Rozmieszczenie przedmiotow w plecaku: {lista_objetosci_przedmiotow}")
@@ -246,7 +272,7 @@ if __name__ == '__main__':
         logger.info(f"Pokolenie {pokolenie}")
         nowa_populacja = zycie(populacja)
         populacja = nowa_populacja
-        najlepsze_przystosowane = Plecak.najlepsze_przystysowanie
+        najlepsze_przystosowane = Plecak.najlepsze_przystosowanie
         logger.info(f"Najlepsze przystosowanie w tym pokoleniu to: {najlepsze_przystosowane}")
 
         if pokolenie == 1:
@@ -274,15 +300,14 @@ if __name__ == '__main__':
                         f"jest wieksza od {max_liczba_pokolen_z_takim_samym_wynikiem}. Przerywam działanie programu.")
             break
 
-
     print("\n\n_______________________________________________________________________________________________________")
     logger.info(f"PODSUMOWANIE POKOLENIA {pokolenie}")
     logger.info(f"Objetosc plecaka: {objetosc_plecaka}")
-    logger.info(f"Najlepsze przystosowanie: {Plecak.najlepsze_przystysowanie}")
+    logger.info(f"Najlepsze przystosowanie: {Plecak.najlepsze_przystosowanie}")
     logger.info(f'Objetosci przedmiotow w plecaku')
     logger.info(lista_objetosci_przedmiotow)
     logger.info("Geny najlepszego osobnika")
     logger.info(Plecak.najlepszy_osobnik.get_geny())
     print("_______________________________________________________________________________________________________\n")
-    sprawdzenie_wyniku(Plecak.najlepsze_przystysowanie, Plecak.najlepszy_osobnik.get_geny(),
+    sprawdzenie_wyniku(Plecak.najlepsze_przystosowanie, Plecak.najlepszy_osobnik.get_geny(),
                        lista_objetosci_przedmiotow, objetosc_plecaka)

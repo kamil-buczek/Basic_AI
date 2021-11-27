@@ -12,14 +12,13 @@ logger = get_logger('main')
 
 class Plecak(Osobnik):
 
-    najlepsze_przystysowanie = 10000000
+    najlepsze_przystosowanie = 10000000
     najlepszy_osobnik = None
 
     def __init__(self, przedmioty: list, obj_plecaka: int, is_dziecko=False):
         super().__init__()
 
         osobnik = []
-        gen = []
 
         if is_dziecko:
             for przedmiot_obj in przedmioty:
@@ -63,12 +62,15 @@ class Plecak(Osobnik):
                 suma_objetosci = suma_objetosci + _[1]
 
         przystosowanie = obj_plecaka - suma_objetosci
-
-        if Plecak.najlepsze_przystysowanie > przystosowanie >= 0:
-            Plecak.najlepsze_przystysowanie = przystosowanie
-            Plecak.najlepszy_osobnik = self
-
         return przystosowanie
+
+    def czy_najlepszy_osobnik(self):
+        """Porownuje funkcje przystosowania tego osobnika do najlepszej i ustawia na ta jezeli jest lepsza"""
+        przystosowanie_osobnika = self.funkcja_przystosowania()
+
+        if Plecak.najlepsze_przystosowanie > przystosowanie_osobnika >= 0:
+            Plecak.najlepsze_przystosowanie = przystosowanie_osobnika
+            Plecak.najlepszy_osobnik = self
 
     def krzyzowanie(self, osobnik: 'Plecak') -> ('Plecak', 'Plecak'):
 
@@ -119,4 +121,3 @@ class Plecak(Osobnik):
         self.osobnik[wylosowana_liczba][0] = gen
 
         logger.debug(f'Gen po mutacji: {self.osobnik[wylosowana_liczba]}')
-
