@@ -55,7 +55,7 @@ def generacja_przedmiotow(liczba_osobnikow) -> list:
     return przedmioty
 
 
-def populacja_startowa() -> list:
+def populacja_startowa(przedmioty: list) -> list:
 
     populacja = []
     for _ in range(N):
@@ -255,13 +255,13 @@ if __name__ == '__main__':
     logger.info(f"Laczna objetosc wszystkich {liczba_przedmiotow} przedmiotow to {suma_objetosci_przedmiotow}")
 
     # objetosc_plecaka = int(suma_objetosci_przedmiotow / 1.5)
-    objetosc_plecaka  = calokowita_objetosc_plecaka
+    objetosc_plecaka = calokowita_objetosc_plecaka
 
     logger.info(f'Objetosc plecaka to: {objetosc_plecaka}')
     logger.info(f"Rozmieszczenie przedmiotow w plecaku: {lista_objetosci_przedmiotow}")
 
     logger.info("Generacja populacji startowej")
-    populacja = populacja_startowa()
+    populacja = populacja_startowa(przedmioty)
     pokolenie = 1
 
     liczba_pokolen_z_takim_samym_wynikiem = 0

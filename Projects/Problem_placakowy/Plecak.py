@@ -22,7 +22,7 @@ class Plecak(Osobnik):
 
         if is_dziecko:
             for przedmiot_obj in przedmioty:
-                gen = [0, przedmiot_obj]
+                gen = [0, przedmiot_obj]  #
                 osobnik.append(gen)
         else:
             for przedmiot in przedmioty:
@@ -84,11 +84,13 @@ class Plecak(Osobnik):
         dziecko1_geny = []
         dziecko2_geny = []
 
+        punkt_krzyzowania = liczba_genow / 2
+
         for _ in range(liczba_genow):
-            if _ < liczba_genow/2:
+            if _ < punkt_krzyzowania:  # przed punktem krzyzowania
                 dziecko1_geny.append(rodzic1.get_geny()[_])
                 dziecko2_geny.append(rodzic2.get_geny()[_])
-            else:
+            else:  # po punkcie krzyzowania
                 dziecko1_geny.append(rodzic2.get_geny()[_])
                 dziecko2_geny.append(rodzic1.get_geny()[_])
 
