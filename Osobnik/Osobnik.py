@@ -15,4 +15,8 @@ class Osobnik(ABC):
     def krzyzowanie(self, osobnik: 'Osobnik') -> ('Osobnik', 'Osobnik'):
         pass
 
+    def funkcja_przystowosania(self):
+        pass
 
+    def czy_najlepszy_osobnik(self):
+        pass
